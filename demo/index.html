@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BFC — Berber Fighting Championship (démo PWA)</title>
+<meta name="description" content="Démo PWA du Berber Fighting Championship.">
+<meta name="theme-color" content="#0a0a0a">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="BFC">
+<style>
+:root{--bg:#0a0a0a;--card:#161616;--line:#262626;--txt:#f5f5f5;--mut:#a3a3a3;--red:#dc2626;color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--txt);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+ padding:env(safe-area-inset-top) 0 calc(72px + env(safe-area-inset-bottom))}
+header{position:sticky;top:0;z-index:5;background:rgba(10,10,10,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);
+ padding:calc(10px + env(safe-area-inset-top)) 16px 10px;display:flex;align-items:center;gap:10px}
+header img{width:34px;height:34px;border-radius:8px}
+header b{letter-spacing:.12em;font-size:15px}
+header span{color:var(--mut);font-size:12px;margin-left:auto}
+.hero{padding:56px 20px 40px;text-align:center;background:radial-gradient(circle at 50% 0,#3a0b0b,transparent 70%)}
+.hero small{color:var(--red);letter-spacing:.3em;font-weight:700;font-size:12px}
+.hero h1{font-size:clamp(44px,14vw,84px);margin:8px 0 12px;letter-spacing:.04em;text-transform:uppercase}
+.hero p{color:var(--mut);max-width:36ch;margin:0 auto 22px;line-height:1.5}
+.btn{display:inline-block;background:var(--red);color:#fff;border:0;border-radius:10px;padding:12px 22px;font-weight:700;font-size:15px;cursor:pointer;text-decoration:none}
+.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--txt)}
+section{padding:24px 16px;max-width:820px;margin:0 auto}
+h2{font-size:14px;letter-spacing:.22em;color:var(--mut);margin:0 0 14px}
+.event{color:var(--red);font-size:12px;font-weight:700;letter-spacing:.1em;margin-bottom:10px}
+.fight{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:10px}
+.row{display:flex;align-items:center;gap:10px;justify-content:space-between}
+.row .f{flex:1;font-size:14px}.row .f.r{text-align:right}
+.w{color:#4ade80;font-weight:700}
+.vs{color:var(--mut);font-size:11px;text-align:center;min-width:72px}
+.vs i{display:block;font-style:normal;color:var(--txt);margin-top:2px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.fighter{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px}
+.fighter b{display:block;font-size:14px;margin-bottom:4px}
+.fighter small{color:var(--mut);display:block}
+.fighter em{font-style:normal;color:var(--red);font-weight:700;font-size:13px}
+input{width:100%;background:var(--card);border:1px solid var(--line);color:var(--txt);border-radius:10px;padding:12px;font-size:15px;margin-bottom:12px}
+nav{position:fixed;left:0;right:0;bottom:0;z-index:6;display:flex;justify-content:space-around;background:rgba(10,10,10,.95);
+ border-top:1px solid var(--line);padding:8px 0 calc(8px + env(safe-area-inset-bottom))}
+nav a{color:var(--mut);text-decoration:none;font-size:12px;padding:6px 14px}
+nav a:hover{color:var(--txt)}
+.partners{display:flex;flex-wrap:wrap;gap:8px}.partners span{border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:12px;color:var(--mut)}
+footer{text-align:center;color:var(--mut);font-size:12px;padding:24px 16px}
+#bar{position:fixed;left:12px;right:12px;bottom:calc(68px + env(safe-area-inset-bottom));z-index:9;max-width:480px;margin:0 auto;display:none;
+ align-items:center;gap:10px;background:#171717;border:1px solid #2a2a2a;border-radius:14px;padding:12px 14px;font-size:14px;box-shadow:0 8px 30px rgba(0,0,0,.5)}
+#bar span{flex:1}#bar button.x{background:none;border:0;color:var(--mut);font-size:18px;cursor:pointer}
+#net{display:none;background:#7c2d12;color:#fff;text-align:center;font-size:12px;padding:4px}
+
+.hero{background:linear-gradient(rgba(10,10,10,.45),#0a0a0a 92%),url(https://berberfc.com/images/gallery/harcha-arena-bfc8.jpg) center/cover no-repeat,#1a0505}
+.av{width:44px;height:44px;border-radius:50%;flex:none;display:grid;place-items:center;font-weight:800;font-size:14px;color:#fff;background:#3f3f46;object-fit:cover;overflow:hidden}
+.fighter .av{width:100%;height:auto;aspect-ratio:1;border-radius:10px;font-size:34px;margin-bottom:10px}
+.fight .f{display:flex;align-items:center;gap:8px}.fight .f.r{flex-direction:row-reverse;text-align:right}
+.fight .f span{line-height:1.2}
+.gal{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.gal img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:12px;background:var(--card)}
+.logos{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px}
+.logos a{display:grid;place-items:center;background:#fff;border-radius:12px;padding:12px;height:74px}
+.logos img{max-width:100%;max-height:100%;object-fit:contain}
+</style>
+</head>
+<body>
+<div id="net">Mode hors ligne — contenu en cache</div>
+<header><img src="https://berberfc.com/images/logo.png" alt="BFC" onerror="this.onerror=null;this.src='icons/icon-192.png'"><b>BFC</b><span id="status"></span></header>
+
+<div class="hero" id="home">
+  <small>WHERE WARRIORS BECOME</small>
+  <h1>Legends</h1>
+  <p>Berber Fighting Championship, l'organisation MMA professionnelle qui redéfinit les sports de combat en Algérie et en Afrique du Nord.</p>
+  <a class="btn" href="#results">Derniers résultats</a>
+  <button class="btn ghost" id="installBtn" style="display:none;margin-left:8px">Installer l'app</button>
+</div>
+
+<section id="results">
+  <h2>DERNIERS RÉSULTATS</h2>
+  <div class="event">BFC FIGHT-NIGHT : THE RECKONING — 14 AOÛT 2026</div>
+  <div id="fights"></div>
+</section>
+
+<section id="gallery">
+  <h2>GALERIE</h2>
+  <div class="gal">
+    <img loading="lazy" src="https://berberfc.com/images/gallery/harcha-arena-bfc8.jpg" alt="Harcha Arena – BFC8">
+    <img loading="lazy" src="https://berberfc.com/images/gallery/winner-celebration-bfc9-mma.jpg" alt="Victoire au BFC9">
+    <img loading="lazy" src="https://berberfc.com/images/gallery/islam-riyahi-bfc8-ko.jpg" alt="KO d'Islam Riyahi au BFC8">
+    <img loading="lazy" src="https://berberfc.com/images/gallery/safsafi-bfc8-entree.jpg" alt="Entrée de Safsafi au BFC8">
+  </div>
+</section>
+
+<section id="fighters">
+  <h2>COMBATTANTS</h2>
+  <input id="q" type="search" placeholder="Rechercher un combattant…" aria-label="Rechercher">
+  <div class="grid" id="grid"></div>
+</section>
+
+<section id="partners">
+  <h2>PARTENAIRES</h2>
+  <div class="logos"><a href="https://berberfc.com/events" target="_blank" rel="noopener"><img loading="lazy" src="https://berberfc.com/bfc-api/uploads/bfc-event-58458b.png" alt="BFC Event"></a><a href="https://dz.infinixmobility.com/" target="_blank" rel="noopener"><img loading="lazy" src="https://berberfc.com/bfc-api/uploads/infinix-3128fd.png" alt="Infinix"></a><a href="https://wickedone.fr/" target="_blank" rel="noopener"><img loading="lazy" src="https://berberfc.com/bfc-api/uploads/wicked01-4e6f12.png" alt="Wicked One"></a><a href="https://laboratoiresvenus.com/" target="_blank" rel="noopener"><img loading="lazy" src="https://berberfc.com/bfc-api/uploads/venus-lab-62edc8.png" alt="Venus Lab"></a><a href="https://www.thefeeddz.com/" target="_blank" rel="noopener"><img loading="lazy" src="https://berberfc.com/bfc-api/uploads/the-feed-0f75e2.png" alt="The Feed"></a><a href="https://www.fabcombatteries.com/" target="_blank" rel="noopener"><img loading="lazy" src="https://berberfc.com/bfc-api/uploads/fabcom-c8146b.png" alt="Fabcom"></a><a href="https://condor.dz" target="_blank" rel="noopener"><img loading="lazy" src="https://berberfc.com/bfc-api/uploads/condor-ecc3c5.png" alt="Condor"></a><a href="https://gamma.sport" target="_blank" rel="noopener"><img loading="lazy" src="https://berberfc.com/bfc-api/uploads/gamma-ea19b3.png" alt="Gamma"></a></div>
+</section>
+
+<footer>Démo PWA non officielle · contenu issu de berberfc.com<br>© BFC – Berber Fighting Championship</footer>
+
+<nav>
+  <a href="#home">Accueil</a><a href="#results">Résultats</a><a href="#fighters">Combattants</a><a href="#partners">Sponsors</a>
+</nav>
+
+<div id="bar" role="dialog"><span id="barMsg"></span><button class="btn" id="barBtn">Installer</button><button class="x" id="barX" aria-label="Fermer">×</button></div>
+
+<script>
+const FIGHTS=[
+ ["Mehdi Bounab","Mohamed Aziz Abdeldjaoued","Head kick (R1)",0],
+ ["Nasreddine Zerfa","Ali Achraf Boussioud","Head kick (R1)",0],
+ ["Islam Laaziz","Khaled Boukhatem","Décision unanime (R3)",0],
+ ["Tahar Hamitouche","Azzedine Hamrani","Head kick (R1)",0],
+ ["Walid Sakhri","Oussama Hammouche","RNC (R1)",0],
+ ["Ala Eddine Brahimi","Imed Eddine Ould Madani","Head kick (R2)",1],
+ ["Haithem Bouzid","Djalal Benyaya","Head kick (R1)",1],
+ ["Yazid Akachat","Ilyas Zerguine","Décision partagée (R3)",0],
+ ["Abdellah Hammali","Sid Ahmed Chouaf","Match nul",-1],
+ ["Ishak Mechri","Miled Hamrouni","TKO (R2)",1],
+ ["Mohamed Nemla","Djamel Fardi","RNC (R1)",0],
+ ["Abdel Ouadoud Ghorab","Youcef Habia","KO (R1)",0]
+];
+const FIGHTERS=[
+ ["Mohamed Said Maalam","Poids mi-lourds","15-6"],["Rustam Serbiev","Poids welters","9-6"],
+ ["Boualem Drissi","Poids légers","4-1"],["Alaeddine Bakha","Poids moyens","3-1"],
+ ["Abderahim Bouzemrain","Poids welters","3-2"],["Walid Sakhri","Poids plumes","3-0"],
+ ["Youcef Boulmis","Poids plumes","2-0"],["Mehdi Bounab","Poids légers","2-0"],
+ ["Abdel Ouadoud Ghorab","Poids légers","2-0"],["Nasreddine Zerfa","Poids moyens","2-0"],
+ ["Houari Aboubkeur","Poids welters","2-1"],["Yazid Akachat","Poids plumes","2-1"],
+ ["Seifeddine Ben Ahmed","Poids légers","2-1"],["Khalil Hailoufa","Poids welters","2-1"],
+ ["Oussama Hammami","Poids welters","2-1"],["Islam Laaziz","Poids coqs","2-1"],
+ ["Ilyas Zerguine","Poids plumes","2-1"],["Djalal Benyaya","Poids welters","1-0"],
+ ["Tahar Hamitouche","Poids moyens","1-0"],["Imed Eddine Ould Madani","Poids légers","1-0"]
+];
+const $=s=>document.querySelector(s);
+// Photos des combattants : ajouter  "Nom Complet": "https://.../photo.jpg"
+const PHOTOS={};
+const COLORS=["#b91c1c","#c2410c","#a16207","#15803d","#0f766e","#1d4ed8","#6d28d9","#be185d"];
+const initials=n=>n.split(" ").filter(Boolean).slice(0,2).map(w=>w[0]).join("").toUpperCase();
+const colorOf=n=>COLORS[[...n].reduce((a,c)=>a+c.charCodeAt(0),0)%COLORS.length];
+const avatar=n=>PHOTOS[n]
+ ?`<img class="av" loading="lazy" src="${PHOTOS[n]}" alt="${n}" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'av',textContent:'${initials(n)}'}))">`
+ :`<div class="av" style="background:${colorOf(n)}">${initials(n)}</div>`;
+$("#fights").innerHTML=FIGHTS.map(([a,b,m,w])=>{
+ const c=w===0?[" w",""]:w===1?["", " w"]:["",""];
+ return `<div class="fight"><div class="row"><div class="f${c[0]}">${avatar(a)}<span>${a}</span></div><div class="vs">VS<i>${m}</i></div><div class="f r${c[1]}">${avatar(b)}<span>${b}</span></div></div></div>`;
+}).join("");
+const grid=$("#grid");
+function draw(f=""){
+ grid.innerHTML=FIGHTERS.filter(x=>x[0].toLowerCase().includes(f)).map(([n,c,r])=>
+  `<div class="fighter">${avatar(n)}<b>${n}</b><small>${c}</small><em>${r}</em></div>`).join("")||"<small>Aucun résultat</small>";
+}
+draw();$("#q").addEventListener("input",e=>draw(e.target.value.toLowerCase().trim()));
+
+// --- PWA ---
+const standalone=matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;
+const ios=/iphone|ipad|ipod/i.test(navigator.userAgent);
+let deferred=null;
+const bar=$("#bar"),msg=$("#barMsg"),barBtn=$("#barBtn");
+$("#status").textContent=standalone?"Mode application":"";
+function dismissed(){try{return localStorage.getItem("bfc-dismiss")==="1"}catch{return false}}
+$("#barX").onclick=()=>{bar.style.display="none";try{localStorage.setItem("bfc-dismiss","1")}catch{}};
+addEventListener("beforeinstallprompt",e=>{
+ e.preventDefault();deferred=e;$("#installBtn").style.display="inline-block";
+ if(!dismissed()&&!standalone){msg.textContent="Installer l'application BFC sur votre appareil";bar.style.display="flex"}
+});
+async function install(){if(!deferred)return;deferred.prompt();await deferred.userChoice;deferred=null;bar.style.display="none";$("#installBtn").style.display="none"}
+$("#installBtn").onclick=install;barBtn.onclick=install;
+addEventListener("appinstalled",()=>{bar.style.display="none";$("#installBtn").style.display="none"});
+if(ios&&!standalone&&!dismissed()){msg.innerHTML="Pour installer : touchez <b>Partager</b> puis <b>« Sur l'écran d'accueil »</b>";barBtn.style.display="none";bar.style.display="flex"}
+function net(){$("#net").style.display=navigator.onLine?"none":"block"}
+addEventListener("online",net);addEventListener("offline",net);net();
+if("serviceWorker"in navigator){
+ navigator.serviceWorker.register("sw.js").then(reg=>{
+  reg.addEventListener("updatefound",()=>{const sw=reg.installing;sw.addEventListener("statechange",()=>{
+   if(sw.state==="installed"&&navigator.serviceWorker.controller){msg.textContent="Nouvelle version disponible";barBtn.textContent="Mettre à jour";barBtn.style.display="inline-block";bar.style.display="flex";barBtn.onclick=()=>sw.postMessage("SKIP_WAITING")}
+  })});
+ });
+ let r=false;navigator.serviceWorker.addEventListener("controllerchange",()=>{if(!r){r=true;location.reload()}});
+}
+</script>
+</body>
+</html>

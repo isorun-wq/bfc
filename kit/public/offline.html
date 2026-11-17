@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0a0a0a">
+  <title>Hors ligne – BFC</title>
+  <style>
+    :root { color-scheme: dark; }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 24px;
+           background: #0a0a0a; color: #f5f5f5; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; text-align: center; }
+    img { width: 96px; height: 96px; border-radius: 20px; margin-bottom: 24px; }
+    h1 { font-size: 1.6rem; letter-spacing: .08em; margin: 0 0 8px; text-transform: uppercase; }
+    p { color: #a3a3a3; max-width: 32ch; margin: 0 auto 24px; line-height: 1.5; }
+    button { background: #dc2626; color: #fff; border: 0; border-radius: 10px; padding: 12px 24px; font-size: 1rem; font-weight: 600; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <main>
+    <img src="/icons/icon-192.png" alt="BFC">
+    <h1>Vous êtes hors ligne</h1>
+    <p>Impossible de charger cette page. Vérifiez votre connexion puis réessayez.</p>
+    <button onclick="location.reload()">Réessayer</button>
+  </main>
+</body>
+</html>
